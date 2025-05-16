@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: #f9f9f9;
+  margin: 0;
+  padding: 32px;
+  color: #222;
+  text-align: center;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+.title {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 32px;
+}
