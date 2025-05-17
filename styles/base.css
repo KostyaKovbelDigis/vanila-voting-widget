@@ -11,6 +11,10 @@ body {
   text-align: center;
 }
 
+button {
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
 h1,
 p {
   margin: 0;

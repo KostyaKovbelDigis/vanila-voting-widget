@@ -1,7 +1,8 @@
-import useAppState from "./state.js";
-import { renderCards } from "./ui.js";
+import { useAppState } from "../state/state.js";
+import { renderCards } from "../ui/cards.js";
+import { readFileAsBase64, getCardFromModal } from "../utils/helpers.js";
 
-const openEditModal = (data) => {
+export const openEditModal = (data) => {
   const modal = document.createElement("div");
   modal.className = "modal";
 
@@ -40,39 +41,24 @@ const openEditModal = (data) => {
 
   document.body.appendChild(modal);
 
-  document.getElementById("imageUpload").onchange = (e) => {
+  document.getElementById("imageUpload").onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const preview = document.getElementById("preview");
-      preview.src = reader.result;
-      preview.style.display = "block";
-    };
-    reader.readAsDataURL(file);
+    const base64 = await readFileAsBase64(file);
+    const preview = document.getElementById("preview");
+    preview.src = base64;
+    preview.style.display = "block";
   };
 
   document.getElementById("cancel").onclick = () => modal.remove();
 
   document.getElementById("save").onclick = () => {
-    const newCard = {
-      ...data,
-      title: document.getElementById("title").value,
-      description: document.getElementById("description").value,
-      image:
-        document.getElementById("preview").style.display === "none"
-          ? ""
-          : document.getElementById("preview").src,
-      button: {
-        label: document.getElementById("label").value,
-        url: document.getElementById("url").value,
-      },
-    };
-
+    const newCard = getCardFromModal(data);
     const cards = useAppState.get();
 
     if (isNew) {
       newCard.id = cards.length + 1;
+      newCard.order = cards.length + 1;
       useAppState.set([...cards, newCard]);
     } else {
       const updatedCards = cards.map((card) =>
@@ -85,5 +71,3 @@ const openEditModal = (data) => {
     modal.remove();
   };
 };
-
-export default openEditModal;
