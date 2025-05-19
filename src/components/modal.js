@@ -1,6 +1,10 @@
 import { useAppState } from "../state/state.js";
 import { renderCards } from "../ui/cards.js";
-import { readFileAsBase64, getCardFromModal } from "../utils/helpers.js";
+import {
+  readFileAsBase64,
+  getCardFromModal,
+  getSortedCards,
+} from "../utils/helpers.js";
 
 export const openEditModal = (data) => {
   const modal = document.createElement("div");
@@ -53,17 +57,25 @@ export const openEditModal = (data) => {
   document.getElementById("cancel").onclick = () => modal.remove();
 
   document.getElementById("save").onclick = () => {
-    const newCard = getCardFromModal(data);
+    const currentCard = getCardFromModal(data);
     const cards = useAppState.get();
 
+    const select = document.getElementById("sortSelect");
+
     if (isNew) {
-      newCard.id = cards.length + 1;
-      newCard.order = cards.length + 1;
-      useAppState.set([...cards, newCard]);
+      const maxId = cards.reduce((acc, cur) => Math.max(acc, cur.id), 0);
+      currentCard.id = maxId + 1;
+
+      currentCard.order = cards.length + 1;
+      const updatedCards = [...cards, currentCard];
+      const sortedCards = getSortedCards(updatedCards, select?.value);
+
+      useAppState.set(sortedCards);
     } else {
       const updatedCards = cards.map((card) =>
-        card.id === newCard.id ? newCard : card
+        card.id === currentCard.id ? currentCard : card
       );
+
       useAppState.set(updatedCards);
     }
 

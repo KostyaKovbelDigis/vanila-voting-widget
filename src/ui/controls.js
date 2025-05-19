@@ -2,10 +2,13 @@ import {
   ID_CONTROLS,
   BTN_RESET_CLASS,
   BTN_ADD_CLASS,
+  ASC,
+  DESC,
 } from "../constants/index.js";
 import { useAppState } from "../state/state.js";
 import { renderCards } from "./cards.js";
 import { openEditModal } from "../components/modal.js";
+import { getSortedCards } from "../utils/helpers.js";
 
 let sortSelectEl = null;
 
@@ -18,8 +21,8 @@ export const renderControls = () => {
     <button class="${BTN_ADD_CLASS}">Add</button>
     <select id="sortSelect" class="sort-select">
         <option value="none">No sort</option>
-        <option value="votesDesc">Top voted</option>
-        <option value="votesAsc">Less voted</option>
+        <option value="${ASC}">Top voted</option>
+        <option value="${DESC}">Less voted</option>
     </select>
   `;
 
@@ -27,6 +30,9 @@ export const renderControls = () => {
 
   bar.querySelector(`.${BTN_RESET_CLASS}`).onclick = async () => {
     await useAppState.reset();
+    if (sortSelectEl) {
+      sortSelectEl.value = "none";
+    }
     renderCards(useAppState.get());
   };
 
@@ -34,20 +40,9 @@ export const renderControls = () => {
     const value = e.target.value;
     const data = useAppState.get().slice();
 
-    if (value === "votesDesc") {
-      data.sort(
-        (a, b) => b.votes.up + b.votes.down - (a.votes.up + a.votes.down)
-      );
-      renderCards(data);
-    } else if (value === "votesAsc") {
-      data.sort(
-        (a, b) => a.votes.up + a.votes.down - (b.votes.up + b.votes.down)
-      );
-      renderCards(data);
-    } else {
-      data.sort((a, b) => a.order - b.order);
-      renderCards(data);
-    }
+    const sorted = getSortedCards(data, value);
+    useAppState.set(sorted);
+    renderCards(sorted);
   };
 
   bar.querySelector(`.${BTN_ADD_CLASS}`).onclick = () =>

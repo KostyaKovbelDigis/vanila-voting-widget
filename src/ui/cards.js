@@ -10,6 +10,7 @@ import {
   handleDrop,
 } from "../utils/drag-n-reorder.js";
 import { getSortSelect } from "./controls.js";
+import { getSortedCards } from "../utils/helpers.js";
 
 export const renderCards = (data) => {
   const existing = document.getElementById("cards-container");
@@ -102,10 +103,16 @@ const createCardComponent = (cardData) => {
     btn.onclick = () => {
       const voteType = btn.dataset.vote;
       cardData.votes[voteType]++;
-      useAppState.set(
-        useAppState.get().map((c) => (c.id === cardData.id ? cardData : c))
-      );
-      renderCards(useAppState.get());
+      const updated = useAppState
+        .get()
+        .map((c) => (c.id === cardData.id ? cardData : c));
+
+      useAppState.set(updated);
+
+      const select = document.getElementById("sortSelect");
+
+      const sorted = getSortedCards(updated, select?.value);
+      renderCards(sorted);
     };
   });
 

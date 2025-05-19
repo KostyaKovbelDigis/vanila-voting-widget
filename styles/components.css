@@ -55,7 +55,7 @@ button.add-btn {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .card-content h3 {
