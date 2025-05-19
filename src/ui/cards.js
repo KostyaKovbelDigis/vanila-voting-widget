@@ -93,6 +93,22 @@ const createCardComponent = (cardData) => {
     </div>
   `;
 
+  card.querySelector(".delete-btn").onclick = () => {
+    useAppState.deleteById(cardData.id);
+    renderCards(useAppState.get());
+  };
+
+  card.querySelectorAll(".vote-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const voteType = btn.dataset.vote;
+      cardData.votes[voteType]++;
+      useAppState.set(
+        useAppState.get().map((c) => (c.id === cardData.id ? cardData : c))
+      );
+      renderCards(useAppState.get());
+    };
+  });
+
   card.querySelector(".edit-btn").addEventListener("click", () => {
     openEditModal(cardData);
   });
